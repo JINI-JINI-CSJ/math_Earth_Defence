@@ -109,7 +109,13 @@ public class FallFormulaMng : MonoBehaviour
         List<FallFormulaObj> lt = new List<FallFormulaObj>();
         foreach( Regen_FallObj s in g.lt_Regen_FallObj )
         {
-            lt.AddRange( s.lt_obj );
+            foreach( FallFormulaObj ss in s.lt_obj )
+            {
+                if( ss.IsLive() )
+                {
+                    lt.Add(ss);
+                }
+            }
         }
         return lt;
     }

@@ -88,4 +88,14 @@ public class Panel_InGameMain : MonoBehaviour
         OnClick_Clear();
     }
 
+    public  void    OnClick_PlayerBomb()
+    {
+        // 임시 
+        PlayerBombEvent playerBombEvent = PlayerBombEvent.g;
+        if( playerBombEvent.TryPlay() )
+        {
+            playerBombEvent.OnActive_Play();
+        }
+    }
+
 }

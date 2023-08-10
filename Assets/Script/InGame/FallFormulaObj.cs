@@ -11,6 +11,8 @@ public class FallFormulaObj : MonoBehaviour
     public  Vector2     pos_vp; // 뷰포트 좌표
 
     public  List<GameObject>    lt_image;
+    public  GameObject          go_ufo;
+    public  GameObject          go_Bomb;
 
     public  int         val_result;
 
@@ -23,8 +25,12 @@ public class FallFormulaObj : MonoBehaviour
 
     public  Regen_FallObj   regen_FallObj_par;
 
+    public  bool    play;
+
     public  void    Init( Vector2 pos_vp , Regen_FallObj regen_FallObj )
     {
+        play = true;
+
         csv = regen_FallObj.csv;        
 
         regen_FallObj_par = regen_FallObj;
@@ -44,16 +50,41 @@ public class FallFormulaObj : MonoBehaviour
         var result = compiledExpr.Invoke();
         val_result = (int)result;
 
+        go_ufo.SetActive(false);
+        go_Bomb.SetActive(false);
         foreach( GameObject s in lt_image ) s.SetActive(false);
-        GameObject img_active = SJ_Unity.GetArray_Random( lt_image.ToArray() );
-        img_active.SetActive(true);
+
+        switch( csv.type )
+        {
+            case 0: 
+            {
+                GameObject img_active = SJ_Unity.GetArray_Random( lt_image.ToArray() );
+                img_active.SetActive(true);
+            }
+            break;
+
+            case 1:
+                go_Bomb.SetActive(true);
+            break;
+
+            case 2:
+                go_ufo.SetActive(true);
+            break;
+        }
 
         Update_Pos();
         Update_UI();
     }
 
+    public  bool    IsLive()
+    {
+        return play;
+    }
+
     public  bool    Check_Result( int check )
     {
+        if( IsLive() == false ) return false;
+
         if( val_result == check )
         {
             return true;
@@ -75,7 +106,7 @@ public class FallFormulaObj : MonoBehaviour
 
     public  void    Update_Pos()
     {
-        fall_time_cur += Time.deltaTime * csv.fall_speed;
+        fall_time_cur += Time.deltaTime * csv.fall_speed * InGameMain.g._ingame_config.fix_fall_time;
         float ratio = fall_time_cur / FallFormulaMng.g.fall_time;
         float y = Mathf.Lerp( pos_y_start , FallFormulaMng.g.end_y_vp , ratio );
         pos_vp.x = pos_x;
@@ -83,8 +114,9 @@ public class FallFormulaObj : MonoBehaviour
 
         if( ratio >= 1.0f )
         {
+            if( csv.type == 0 )
+                InGamePlayer.Damage(10);
 
-            InGamePlayer.Damage(10);
             // 도달
             Return();
         }
@@ -93,9 +125,39 @@ public class FallFormulaObj : MonoBehaviour
 
     public  void    Return()
     {
+        if( play == false ) return;
+
+        play = false;
+
         regen_FallObj_par.Remove_Obj(this);
         SJPool.ReturnInst( inst_ui );
         SJPool.ReturnInst(gameObject);
+    }
+
+
+    public  void    AddScore()
+    {
+        if( IsLive() == false ) return;
+        switch( csv.type )
+        {
+            case 0:
+            {
+                InGamePlayer.AddScore(1);
+            }
+            break;
+
+            case 1:
+            {
+                InGamePlayer.AddScore(1);
+            }
+            break;
+
+            case 2:
+            {
+                InGamePlayer.AddScore(5);
+            }
+            break;
+        }
     }
 
     private void FixedUpdate() {

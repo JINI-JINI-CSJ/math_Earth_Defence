@@ -22,6 +22,9 @@ public class CSV_Formula : SJ_CSV_BaseObj
     public  int         percent;
     public  float       fall_speed;
 
+    public  int         stage_num;
+    public  int         damage;
+
 
     override	public	void	OnRead( SJ_CSV_BasePage _par , string[] _strs )
     {
@@ -38,6 +41,9 @@ public class CSV_Formula : SJ_CSV_BaseObj
         regen_repeat_time   = Next_Float();
         percent             = Next_Int();
         fall_speed          = Next_Float() * 0.01f;
+
+        stage_num = Next_Int();
+        damage = Next_Int();
     }
 
     public  string  Make_Str()

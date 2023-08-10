@@ -12,6 +12,13 @@ public class InGameMain : MonoBehaviour
     public  FallFormulaMng  fallFormulaMng;
     public  InGamePlayer    inGamePlayer;
 
+    [System.Serializable]
+    public class _INGAME_CONFIG
+    {
+        public  float   fix_fall_time = 1.0f;
+    }
+
+    public _INGAME_CONFIG   _ingame_config;
 
     private void Awake() {
         g = this;
