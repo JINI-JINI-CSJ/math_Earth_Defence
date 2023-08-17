@@ -41,9 +41,13 @@ public class SJ_UnityUI_Util : SJ_Singleton_Mono
             {
                 object obj_arg = lt_data[i];           
 
-//                Debug.Log( tr_item.name );
+                //Debug.Log( tr_item.name );
 
                 tr_item.gameObject.SetActive(true);
+
+                // 주의 !!!!
+                // 반드시 엑티브 상태일것!!!!
+                // 부모도 액티브인지 확인!!!! 
                 tr_item.gameObject.SendMessage( func_item , obj_arg , SendMessageOptions.DontRequireReceiver );
             }else{
                 tr_item.gameObject.SetActive(false);

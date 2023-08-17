@@ -31,14 +31,30 @@ public class FallFormulaMng : MonoBehaviour
         lt_Regen_FallObj.Clear();
         SJ_Unity.Delete_Child( transform );
 
-        foreach( CSV_Formula s in ME_CSV.csv_Formula_Page.dic_int.Values.Cast<CSV_Formula>())
+        // foreach( CSV_Formula s in ME_CSV.csv_Formula_Page.dic_int.Values.Cast<CSV_Formula>())
+        // {
+        //     GameObject inst_regen = new GameObject("regen");
+        //     Regen_FallObj c = inst_regen.AddComponent<Regen_FallObj>();
+        //     c.Init( s );
+        //     lt_Regen_FallObj.Add(c);
+        //     SJ_Unity.SetEqTrans( inst_regen.transform , null , transform );
+        // }
+
+        List<CSV_Formula>   lt_csv = ME_CSV.Get_StageNum_CSV_Formula( ME_Account.StageNum );
+        foreach( CSV_Formula s in lt_csv )
         {
-            GameObject inst_regen = new GameObject("regen");
-            Regen_FallObj c = inst_regen.AddComponent<Regen_FallObj>();
-            c.Init( s );
-            lt_Regen_FallObj.Add(c);
-            SJ_Unity.SetEqTrans( inst_regen.transform , null , transform );
+            Create_Regen(s);
         }
+    }
+
+
+    public  void    Create_Regen( CSV_Formula csv )
+    {
+        GameObject inst_regen = new GameObject("regen");
+        Regen_FallObj c = inst_regen.AddComponent<Regen_FallObj>();
+        c.Init( csv );
+        lt_Regen_FallObj.Add(c);
+        SJ_Unity.SetEqTrans( inst_regen.transform , null , transform );
     }
 
     public  void    Play()

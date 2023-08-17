@@ -114,8 +114,8 @@ public class FallFormulaObj : MonoBehaviour
 
         if( ratio >= 1.0f )
         {
-            if( csv.type == 0 )
-                InGamePlayer.Damage(10);
+            //if( csv.type == 0 )
+                InGamePlayer.Damage( csv.damage );
 
             // 도달
             Return();

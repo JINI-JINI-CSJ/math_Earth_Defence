@@ -22,13 +22,16 @@ public class ME_CSV : SJ_Singleton_Mono
 
 
 
-    static  public  CSV_Formula_Page    csv_Formula_Page = new CSV_Formula_Page();
+    static  public  CSV_Formula_Page    csv_Formula_Page    = new CSV_Formula_Page();
     static  public  CSV_Formula_Page    csv_Formula_stage_Page = new CSV_Formula_Page();
+    static  public  CSV_Formula_Page    csv_Formula_all     = new CSV_Formula_Page();
+    static  public  CSV_StageDesc_Page  csv_StageDesc_Page  = new CSV_StageDesc_Page();
 
-    static  public  CSV_Formula_Page    csv_Formula_all = new CSV_Formula_Page();
 
     // 무한모드 빼고 나머지 스테이지 갯수
     static          public  int     stage_num;
+
+    static          public   HashSet<int>    hs_stage_num = new HashSet<int>();
 
     static  public  void    Load( MonoBehaviour mono = null , string func = "" )
     {
@@ -53,6 +56,7 @@ public class ME_CSV : SJ_Singleton_Mono
         Debug.Log( "csv 로딩 시작" ); 
         StartCoroutine( load_Seat(csv_Formula_Page        , "타임리스모드"  , false ) );
         StartCoroutine( load_Seat(csv_Formula_stage_Page  , "스테이지"      , false ) );
+        StartCoroutine( load_Seat(csv_StageDesc_Page      , "스테이지설명"  , false ) );
     }
 
     public  IEnumerator    load_Seat( SJ_CSV_BasePage seat , string seat_name , bool id_int_str )
@@ -103,18 +107,45 @@ public class ME_CSV : SJ_Singleton_Mono
         csv_Formula_all.Add( csv_Formula_Page );
         csv_Formula_all.Add( csv_Formula_stage_Page );
 
-        HashSet<int>    hs_stage_num = new HashSet<int>();
+        hs_stage_num.Clear();
         foreach( CSV_Formula s in csv_Formula_all.dic_int.Values.Cast<CSV_Formula>())
         {
             hs_stage_num.Add( s.stage_num );
         }
-        // 여기서 "0" 스테이지는 삭제
-        if( hs_stage_num.Contains(0) )
-        {
-            hs_stage_num.Remove(0);
-        }
+
+        // // 여기서 "0" 스테이지는 삭제
+        // if( hs_stage_num.Contains(0) )
+        // {
+        //     hs_stage_num.Remove(0);
+        // }
+
         stage_num = hs_stage_num.Count;
         Debug.Log( "스테이지 갯수 : " + stage_num );
+    }
+
+    static public List<CSV_Formula>     Get_StageNum_CSV_Formula( int stage_num )
+    {
+        List<CSV_Formula> lt = new List<CSV_Formula>();
+        foreach( CSV_Formula s in csv_Formula_all.dic_int.Values.Cast<CSV_Formula>())
+        {
+            if( stage_num == s.stage_num )
+            {
+                lt.Add(s);
+            }
+        }
+        return lt;
+    }
+
+    static public   CSV_StageDesc   Get_CSV_StageDesc( int stage_num )
+    {
+        foreach( CSV_StageDesc s in csv_StageDesc_Page.dic_int.Values.Cast<CSV_StageDesc>() )
+        {
+            if( s.stage_num == stage_num )   
+            {
+                return s;
+            }
+        }
+        return null;
     }
 
 

@@ -12,6 +12,11 @@ public class InGameMain : MonoBehaviour
     public  FallFormulaMng  fallFormulaMng;
     public  InGamePlayer    inGamePlayer;
 
+    public  float               stagePlayTime = 60.0f;
+    public  Panel_InGameInfUI   panel_InGameInfUI;
+
+    public  bool                play;
+
     [System.Serializable]
     public class _INGAME_CONFIG
     {
@@ -29,28 +34,36 @@ public class InGameMain : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // string  str = "";
-        // int     int_result = 0;
-        // ME_CSV.Get_CalcFormula( ref str , ref int_result );
-        // Debug.Log( "받은 결과 : " + int_result );
-
         ME_CSV.Load( this , "OnLoad_CSV" );
     }
 
     public  void    OnLoad_CSV()
     {
         Init();
-        Play();
+        if( ME_Account.StageNum == 1 )
+        {
+            SJ_UnityUIMng.OpenPopup( "Panel_Tutorial" );
+        }else{
+            Play();            
+        }
     }
 
     public  void    Init()
     {
         inGamePlayer.Init();
         fallFormulaMng.Init();
+
+        if( ME_Account.StageNum == 0 )
+        {
+            panel_InGameInfUI.Start_Play( -1 );
+        }else{
+            panel_InGameInfUI.Start_Play( stagePlayTime ); 
+        }
     }
 
     public void    Play()
     {
+        play = true;
         fallFormulaMng.Play();
     }
 
@@ -66,5 +79,22 @@ public class InGameMain : MonoBehaviour
         SJ_Unity.WorldPos_ToScreenPos( g.cam_world , g.cam_UI , tr_w.transform.position , ui.transform );
     }
 
-    
+    static public   void    OnEndPlay( bool clear_stage )
+    {
+        g._OnEndPlay(clear_stage);
+    }    
+
+    public bool stage_clear;
+    public   void    _OnEndPlay(bool clear_stage)
+    {
+        if( play == false ) return;
+
+        stage_clear = clear_stage;
+        play = false;
+        Time.timeScale = 0;
+
+        InGamePlayer.g.StageResult();
+
+        SJ_UnityUIMng.OpenPopup("Panel_InGameResult");
+    }
 }

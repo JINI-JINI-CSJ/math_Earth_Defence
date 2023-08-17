@@ -8,6 +8,10 @@ public class InGamePlayer : MonoBehaviour
     public  int     HP;
     public  int     hp_cur;
     public  int     score;
+    public  int     combo;
+    public  int     combo_MAX;
+
+    public  int     stage_ScoreTotal;
 
     public  GameObject  prf_bullet;
 
@@ -31,6 +35,8 @@ public class InGamePlayer : MonoBehaviour
     public  void    Init()
     {
         hp_cur = HP;
+        combo = 0;
+        combo_MAX = 0;
         Panel_InGameInfUI.Update_UI();
     }
 
@@ -41,8 +47,17 @@ public class InGamePlayer : MonoBehaviour
 
     public  void    _Damage(int val)
     {
+        if( ME_Account.user_Save.config_Vibrate )
+            SJ_AndroidVibration.Vibrate(100);
+
+        combo = 0;
         hp_cur -= val;
-        if( hp_cur < 0 )hp_cur = 0;
+        if( hp_cur <= 0 )
+        {
+            hp_cur = 0;            
+            InGameMain.OnEndPlay( false );
+        }
+
         Panel_InGameInfUI.Update_UI();
     }
 
@@ -62,10 +77,15 @@ public class InGamePlayer : MonoBehaviour
     static  public  bool    Input_Value( int val )
     {
         bool bomb = false;
+
+        bool answer = false;
+
         while( true )
         {
             List<FallFormulaObj> lt_eq = FallFormulaMng.Get_All_FallObj( val );
             if( lt_eq.Count < 1 ) break;
+
+            answer = true;
 
             FallFormulaObj s = lt_eq[0];
             s.AddScore();
@@ -81,10 +101,20 @@ public class InGamePlayer : MonoBehaviour
             }
         }
 
+        if( answer == false )  
+        {
+            g.combo = 0;
+        }else{
+            g.combo++;
+            if( g.combo_MAX < g.combo ) g.combo_MAX = g.combo;
+        }
+
         if( bomb )
         {
             g.Clear_All_FallObj();
         }
+
+        
 
         Panel_InGameInfUI.Update_UI();
         return true;
@@ -111,4 +141,12 @@ public class InGamePlayer : MonoBehaviour
         BulletPlayer bulletPlayer = inst_bullet.GetComponent<BulletPlayer>();
         bulletPlayer.MoveStart( this , tr_target );
     }
+
+    public  int     StageResult()
+    {
+        stage_ScoreTotal = score + combo_MAX;
+        return stage_ScoreTotal;
+    }
+
+
 }
